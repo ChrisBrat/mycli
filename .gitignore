@@ -16,3 +16,6 @@
 
 # Ides
 .vscode
+
+# App data
+.data

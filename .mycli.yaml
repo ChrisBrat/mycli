@@ -1,0 +1,5 @@
+database:
+  connectionUri: "database connection uri"
+name: abc
+remote:
+  directory: "c:/src_files/"
