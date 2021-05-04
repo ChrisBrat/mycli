@@ -8,3 +8,6 @@ actions :
         directory: "git...."
   install:
   documentation:
+    git:
+      remote:
+        directory: "git...."

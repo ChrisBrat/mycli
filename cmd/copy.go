@@ -25,7 +25,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// copyCmd represents the copy command
 var copyCmd = &cobra.Command{
 	Use:   "copy",
 	Short: "Copy a remote file to a local directory",
