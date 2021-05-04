@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"mycli/common"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -30,20 +31,24 @@ var copyCmd = &cobra.Command{
 	Short: "Copy a remote file to a local directory",
 	Long:  `Copy a remote file to a local directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		copyFile(args)
+
+		viperMethod := viper.GetString("copy.method")
+
+		switch viperMethod {
+		case "mount":
+			mountCopyFile(args)
+		case "git":
+			gitCopyFile(args)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(copyCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	//copyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	//copyCmd.PersistentFlags().StringP("remote.directory", "r", viper.GetString("remote.directory"), "Remote copy target url")
-	//viper.BindPFlag("remote.directory", copyCmd.PersistentFlags().Lookup("remote.directory"))
+	copyCmd.Flags().StringP("method", "m", "mount", "Method to be used for copy")
+	viper.BindPFlag("copy.method", copyCmd.Flags().Lookup("method"))
+	//copyCmd.MarkFlagRequired("method")
 }
 
 func check(e error) {
@@ -52,19 +57,34 @@ func check(e error) {
 	}
 }
 
-func copyFile(args []string) {
-	remoteDirectory := viper.GetString("remote.directory")
+func gitCopyFile(args []string) {
+	gitCopyViper := viper.Sub("actions.copy.git")
+	if gitCopyViper == nil {
+		panic("gitCopyViper not found")
+	}
+
+	remoteDirectory := gitCopyViper.GetString("remote.directory")
+	fmt.Printf("Git copy %v", remoteDirectory)
+}
+
+func mountCopyFile(args []string) {
+	mountCopyViper := viper.Sub("actions.copy.mount")
+	if mountCopyViper == nil {
+		panic("mountCopyViper not found")
+	}
+
+	remoteDirectory := mountCopyViper.GetString("remote.directory")
 	filename := "file1.txt"
 
-	fmt.Printf("COPY %v/%v to %v - ", remoteDirectory, filename, ".data/installs")
-	err := os.MkdirAll(".data/installs", 0755)
+	fmt.Printf("COPY %v/%v to %v - ", remoteDirectory, filename, common.InstallsDirectory)
+	err := os.MkdirAll(common.InstallsDirectory, 0755)
 	check(err)
 
 	from, err := os.Open(remoteDirectory + "/" + filename)
 	check(err)
 	defer from.Close()
 
-	to, err := os.Create(".data/installs/" + filename)
+	to, err := os.Create(common.InstallsDirectory + "/" + filename)
 	check(err)
 	defer to.Close()
 

@@ -49,8 +49,6 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is .mycli.yaml)")
-
-	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -59,12 +57,7 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		//home, err := homedir.Dir()
-		//cobra.CheckErr(err)
-
-		// Search config in home directory with name ".mycli" (without extension).
-		//viper.AddConfigPath(home)
+		// Find config file in current directory
 		viper.AddConfigPath(".")
 		viper.SetConfigName(".mycli")
 	}

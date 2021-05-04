@@ -1,5 +1,10 @@
-database:
-  connectionUri: "database connection uri"
-name: abc
-remote:
-  directory: "c:/src_files/"
+actions : 
+  copy:
+    mount:
+      remote:
+        directory: "c:/src_files/"
+    git:
+      remote:
+        directory: "git...."
+  install:
+  documentation:
