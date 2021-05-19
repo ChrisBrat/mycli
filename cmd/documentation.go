@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"mycli/common"
 
 	"github.com/spf13/cobra"
@@ -27,10 +28,11 @@ var documentationCmd = &cobra.Command{
 	Short: "Retrieve documentation from the knowledge base",
 	Long:  `Retrieve documentation from the knowledge base.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		viperMethod := viper.GetString("copy.method")
+		viperMethod := viper.GetString("documentation.method")
 
 		switch viperMethod {
-		//case "mount":
+		case "mount":
+			mountDocumentation(args)
 		case "git":
 			gitDocumentation(args)
 		}
@@ -41,17 +43,24 @@ func init() {
 	rootCmd.AddCommand(documentationCmd)
 
 	documentationCmd.Flags().StringP("method", "m", "git", "Method to be used for documentation copy")
-	viper.BindPFlag("copy.method", documentationCmd.Flags().Lookup("method"))
+	viper.BindPFlag("documentation.method", documentationCmd.Flags().Lookup("method"))
 }
 
 func gitDocumentation(args []string) {
-	common.GitClone("https://github.com/go-git/go-git", common.DocumentationDirectory)
 
-	/*gitDocumentationViper := viper.Sub("actions.documentation.git")
+	gitDocumentationViper := viper.Sub("actions.documentation.git")
 	if gitDocumentationViper == nil {
 		panic("gitDocumentationViper not found")
 	}
 
 	remoteDirectory := gitDocumentationViper.GetString("remote.directory")
-	fmt.Printf("Git documentation %v", remoteDirectory)*/
+	fmt.Printf("Clone git documentation %v to %v\n", remoteDirectory, common.DocumentationDirectory)
+
+	common.GitClone(remoteDirectory, common.DocumentationDirectory)
+}
+
+func mountDocumentation(args []string) {
+	/**
+	* TODO: Implement mount documentation
+	 */
 }

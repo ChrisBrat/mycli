@@ -10,4 +10,4 @@ actions :
   documentation:
     git:
       remote:
-        directory: "git...."
+        directory: "https://github.com/go-git/go-git"

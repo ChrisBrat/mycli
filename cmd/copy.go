@@ -18,8 +18,12 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"io/fs"
+	"io/ioutil"
+	"log"
 	"mycli/common"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -47,7 +51,6 @@ func init() {
 
 	copyCmd.Flags().StringP("method", "m", "mount", "Method to be used for copy")
 	viper.BindPFlag("copy.method", copyCmd.Flags().Lookup("method"))
-	//copyCmd.MarkFlagRequired("method")
 }
 
 func check(e error) {
@@ -64,6 +67,10 @@ func gitCopyFile(args []string) {
 
 	remoteDirectory := gitCopyViper.GetString("remote.directory")
 	fmt.Printf("Git copy %v", remoteDirectory)
+
+	/**
+	* TODO: Implement git copy
+	 */
 }
 
 func mountCopyFile(args []string) {
@@ -73,7 +80,21 @@ func mountCopyFile(args []string) {
 	}
 
 	remoteDirectory := mountCopyViper.GetString("remote.directory")
-	filename := "file1.txt"
+	files, err := ioutil.ReadDir(remoteDirectory)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, file := range files {
+		if filepath.Ext(file.Name()) == ".zip" {
+			copyFile(remoteDirectory, file)
+		}
+	}
+}
+
+func copyFile(remoteDirectory string, file fs.FileInfo) {
+
+	filename := file.Name()
 
 	fmt.Printf("COPY %v/%v to %v - ", remoteDirectory, filename, common.InstallsDirectory)
 	err := os.MkdirAll(common.InstallsDirectory, 0755)
